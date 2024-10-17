@@ -1,8 +1,21 @@
 // ClimbingApp.js
 
+/*
+  This file contains the main component for our Climbing App. It manages the state
+  of climbing sessions and routes, and provides functionality for creating, viewing,
+  and updating sessions and routes.
+
+  We'll start by importing the necessary dependencies and components.
+*/
+
 import React, { useState, useEffect } from 'react';
 import CircularSlider from '@fseehawer/react-circular-slider';
 import './ClimbingApp.css';
+
+/*
+  The Route component represents a single climbing route within a session.
+  It displays the route's difficulty and allows the user to update its status.
+*/
 
 const Route = ({ route, updateRoute }) => {
   const handleSwipe = (success) => {
@@ -39,6 +52,11 @@ const Route = ({ route, updateRoute }) => {
   );
 };
 
+/*
+  The Summary component displays a table summarizing the routes in a session.
+  It shows the difficulty, attempts, successes, and failures for each route.
+*/
+
 const Summary = ({ routes }) => {
   return (
     <table className="summary-table">
@@ -64,6 +82,11 @@ const Summary = ({ routes }) => {
   );
 };
 
+/*
+  The SessionList component displays a list of previous climbing sessions.
+  It allows the user to select and load a specific session.
+*/
+
 const SessionList = ({ sessions, loadSession }) => (
   <div>
     <h2>Previous Sessions</h2>
@@ -77,12 +100,22 @@ const SessionList = ({ sessions, loadSession }) => (
   </div>
 );
 
-const ClimbingApp = () => {
-  const [sessions, setSessions] = useState([]);
-  const [currentSession, setCurrentSession] = useState(null);
-  const [routes, setRoutes] = useState([]);
-  const [isViewingSession, setIsViewingSession] = useState(false); // New state for viewing sessions
+/*
+  The main ClimbingApp component manages the overall state and functionality
+  of the application. It uses React hooks to manage state and side effects.
+*/
 
+const ClimbingApp = () => {
+  // State variables to manage the application's data
+  const [sessions, setSessions] = useState([]); // List of all sessions
+  const [currentSession, setCurrentSession] = useState(null); // ID of the current session
+  const [routes, setRoutes] = useState([]); // List of routes in the current session
+  const [isViewingSession, setIsViewingSession] = useState(false); // Flag for viewing previous sessions
+
+  /*
+    useEffect hook to fetch the list of sessions when the component mounts.
+    This is similar to componentDidMount in class components.
+  */
   useEffect(() => {
     fetch('http://localhost:5000/api/sessions')
       .then((res) => res.json())
@@ -90,11 +123,15 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error fetching sessions:', error));
   }, []);
 
+  /*
+    Function to start a new climbing session.
+    It sends a POST request to the server and updates the local state.
+  */
   const startNewSession = () => {
     fetch('http://localhost:5000/api/sessions', {
       method: 'POST',
     })
-      .then((res) => res.json())
+     .then((res) => res.json())
       .then((newSession) => {
         setCurrentSession(newSession.id);
         setRoutes([]);
@@ -103,6 +140,10 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error starting session:', error));
   };
 
+  /*
+    Function to load an existing session.
+    It fetches the session data from the server and updates the local state.
+  */
   const loadSession = (sessionId) => {
     fetch(`http://localhost:5000/api/sessions/${sessionId}`)
       .then((res) => res.json())
@@ -114,6 +155,10 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error loading session:', error));
   };
 
+  /*
+    Function to mark the current session as complete.
+    It sends a PUT request to the server and resets the local state.
+  */
   const completeSession = () => {
     fetch(`http://localhost:5000/api/sessions/${currentSession}`, {
       method: 'PUT',
@@ -128,6 +173,10 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error completing session:', error));
   };
 
+  /*
+    Function to update a route within the current session.
+    It can update the difficulty or success/failure status of a route.
+  */
   const updateRoute = (routeId, success = null, difficulty = null) => {
     const updatedRoute = routes.find((route) => route.id === routeId);
 
@@ -151,6 +200,10 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error updating route:', error));
   };
 
+  /*
+    Function to add a new route to the current session.
+    It sends a POST request to the server and updates the local state.
+  */
   const addNewRoute = () => {
     const newRoute = {
       difficulty: 0,
@@ -168,12 +221,18 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error adding route:', error));
   };
 
+  /*
+    The render method for the ClimbingApp component.
+    It conditionally renders different views based on the current state.
+  */
   return (
     <div className="climbing-app">
       {currentSession ? (
+        // If there's a current session, show the session view
         <div>
           <h2>Session {currentSession}</h2>
-          {isViewingSession ? ( // Display a summary for previous sessions
+          {isViewingSession ? (
+            // If viewing a previous session, show only the summary
             <>
               <Summary routes={routes} />
               <button onClick={() => setIsViewingSession(false)}>
@@ -181,6 +240,7 @@ const ClimbingApp = () => {
               </button>
             </>
           ) : (
+            // If it's an active session, show the full interface
             <>
               <button onClick={completeSession}>Complete Session</button>
               <button onClick={addNewRoute}>Add Route</button>
@@ -192,6 +252,7 @@ const ClimbingApp = () => {
           )}
         </div>
       ) : (
+        // If there's no current session, show the session list and start button
         <div>
           <button onClick={startNewSession}>Start New Session</button>
           <SessionList sessions={sessions} loadSession={loadSession} />
@@ -201,4 +262,6 @@ const ClimbingApp = () => {
   );
 };
 
+// Export the ClimbingApp component as the default export
 export default ClimbingApp;
+ 
