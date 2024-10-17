@@ -1,37 +1,30 @@
 // ClimbingApp.js
 
-// Import necessary libraries and components
 import React, { useState, useEffect } from 'react';
-import CircularSlider from '@fseehawer/react-circular-slider';  // Circular slider library
-import './ClimbingApp.css';  // Import custom styling
+import CircularSlider from '@fseehawer/react-circular-slider';
+import './ClimbingApp.css';
 
-// The Route component represents each individual climbing route.
 const Route = ({ route, updateRoute }) => {
-
-  // Handle a swipe action (success or failure) from the user.
   const handleSwipe = (success) => {
     updateRoute(route.id, success);
   };
 
-  // Handle difficulty change via the circular slider.
   const handleDifficultyChange = (value) => {
-    updateRoute(route.id, null, value);  // Update route with new difficulty
+    updateRoute(route.id, null, value);
   };
 
-  // Define difficulty levels for display purposes.
   const difficultyLevels = ['V0', 'V1', 'V2', 'V3', 'V4'];
 
-  // Return the JSX for rendering each route
   return (
     <div className="route">
       <h3>{`Route ${route.id}`}</h3>
       <div className="circular-slider">
         <CircularSlider
           label="Difficulty"
-          data={difficultyLevels}  // Pass difficulty levels to the circular slider
-          value={difficultyLevels[route.difficulty]}  // Set current difficulty value
-          onChange={handleDifficultyChange}  // Handle value change
-          width={120}  // Adjust the size of the circular slider
+          data={difficultyLevels}
+          value={difficultyLevels[route.difficulty]}
+          onChange={handleDifficultyChange}
+          width={120}
           knobColor="#4CAF50"
           knobSize={40}
           progressWidth={8}
@@ -39,7 +32,6 @@ const Route = ({ route, updateRoute }) => {
           progressColorTo="#009c9c"
         />
       </div>
-
       <button onClick={() => handleSwipe(true)}>Success</button>
       <button onClick={() => handleSwipe(false)}>Fail</button>
       <p>{`Attempts: ${route.attempts}, Successes: ${route.successes}, Failures: ${route.failures}`}</p>
@@ -47,7 +39,6 @@ const Route = ({ route, updateRoute }) => {
   );
 };
 
-// The Summary component renders a table summarizing all climbing attempts.
 const Summary = ({ routes }) => {
   return (
     <table className="summary-table">
@@ -73,19 +64,70 @@ const Summary = ({ routes }) => {
   );
 };
 
-// The main ClimbingApp component manages state and handles interactions.
-const ClimbingApp = () => {
-  const [routes, setRoutes] = useState([]);  // State to store the routes
+const SessionList = ({ sessions, loadSession }) => (
+  <div>
+    <h2>Previous Sessions</h2>
+    <ul>
+      {sessions.map((session) => (
+        <li key={session.id} onClick={() => loadSession(session.id)}>
+          Session {session.id} - {session.date} {session.completed ? "(Completed)" : "(Ongoing)"}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
-  // Fetch initial routes from the backend when the component loads.
+const ClimbingApp = () => {
+  const [sessions, setSessions] = useState([]);
+  const [currentSession, setCurrentSession] = useState(null);
+  const [routes, setRoutes] = useState([]);
+  const [isViewingSession, setIsViewingSession] = useState(false); // New state for viewing sessions
+
   useEffect(() => {
-    fetch('http://localhost:5000/api/routes')
+    fetch('http://localhost:5000/api/sessions')
       .then((res) => res.json())
-      .then((data) => setRoutes(data))
-      .catch((error) => console.error('Error fetching routes:', error));
+      .then((data) => setSessions(data))
+      .catch((error) => console.error('Error fetching sessions:', error));
   }, []);
 
-  // Update a route's data (attempts, successes, failures, or difficulty).
+  const startNewSession = () => {
+    fetch('http://localhost:5000/api/sessions', {
+      method: 'POST',
+    })
+      .then((res) => res.json())
+      .then((newSession) => {
+        setCurrentSession(newSession.id);
+        setRoutes([]);
+        setIsViewingSession(false); // Ensure we are no longer viewing previous sessions
+      })
+      .catch((error) => console.error('Error starting session:', error));
+  };
+
+  const loadSession = (sessionId) => {
+    fetch(`http://localhost:5000/api/sessions/${sessionId}`)
+      .then((res) => res.json())
+      .then((session) => {
+        setCurrentSession(session.id);
+        setRoutes(session.routes);
+        setIsViewingSession(true); // Set viewing mode for previous sessions
+      })
+      .catch((error) => console.error('Error loading session:', error));
+  };
+
+  const completeSession = () => {
+    fetch(`http://localhost:5000/api/sessions/${currentSession}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed: true }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setCurrentSession(null);
+        setRoutes([]);
+      })
+      .catch((error) => console.error('Error completing session:', error));
+  };
+
   const updateRoute = (routeId, success = null, difficulty = null) => {
     const updatedRoute = routes.find((route) => route.id === routeId);
 
@@ -95,7 +137,7 @@ const ClimbingApp = () => {
       success ? updatedRoute.successes += 1 : updatedRoute.failures += 1;
     }
 
-    fetch(`http://localhost:5000/api/routes/${routeId}`, {
+    fetch(`http://localhost:5000/api/sessions/${currentSession}/routes/${routeId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedRoute),
@@ -109,40 +151,52 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error updating route:', error));
   };
 
-  // Add a new route dynamically to the list.
   const addNewRoute = () => {
     const newRoute = {
-      id: routes.length + 1,
       difficulty: 0,
-      attempts: 0,
-      successes: 0,
-      failures: 0,
     };
 
-    fetch('http://localhost:5000/api/routes', {
+    fetch(`http://localhost:5000/api/sessions/${currentSession}/routes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newRoute),
     })
       .then((res) => res.json())
-      .then((data) => setRoutes((prevRoutes) => [...prevRoutes, data]))
+      .then((route) => {
+        setRoutes([...routes, route]);
+      })
       .catch((error) => console.error('Error adding route:', error));
   };
 
   return (
     <div className="climbing-app">
-      <h1>Rock Climbing Session</h1>
-      
-      {/* Render the routes dynamically */}
-      {routes.map((route) => (
-        <Route key={route.id} route={route} updateRoute={updateRoute} />
-      ))}
-
-      {/* Button to add a new route */}
-      <button className="add-route-btn" onClick={addNewRoute}>Add New Route</button>
-
-      {/* Render the summary table */}
-      <Summary routes={routes} />
+      {currentSession ? (
+        <div>
+          <h2>Session {currentSession}</h2>
+          {isViewingSession ? ( // Display a summary for previous sessions
+            <>
+              <Summary routes={routes} />
+              <button onClick={() => setIsViewingSession(false)}>
+                Back to Session List
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={completeSession}>Complete Session</button>
+              <button onClick={addNewRoute}>Add Route</button>
+              {routes.map((route) => (
+                <Route key={route.id} route={route} updateRoute={updateRoute} />
+              ))}
+              <Summary routes={routes} />
+            </>
+          )}
+        </div>
+      ) : (
+        <div>
+          <button onClick={startNewSession}>Start New Session</button>
+          <SessionList sessions={sessions} loadSession={loadSession} />
+        </div>
+      )}
     </div>
   );
 };

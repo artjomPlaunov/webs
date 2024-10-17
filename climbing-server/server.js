@@ -1,53 +1,84 @@
-// server.js
-
-// Include the necessary modules: Express for the server, and CORS for allowing cross-origin requests.
 const express = require('express');
 const cors = require('cors');
-const app = express(); // Create an instance of the Express app
-const port = 5000;     // Set the port for the server
+const app = express();
+const port = 5000;
 
-// Use CORS to allow the frontend to talk to this backend.
 app.use(cors());
-app.use(express.json()); // Use middleware to parse JSON bodies
+app.use(express.json());
 
-// Define an in-memory "database" to store the climbing routes.
-// Each route has an ID, difficulty level, attempts, successes, and failures.
-let routes = [
-  { id: 1, difficulty: 0, attempts: 0, successes: 0, failures: 0 },
-  { id: 2, difficulty: 0, attempts: 0, successes: 0, failures: 0 },
-  { id: 3, difficulty: 0, attempts: 0, successes: 0, failures: 0 },
-];
+let sessions = [];
 
-// Define a route to get all routes data.
-app.get('/api/routes', (req, res) => {
-  res.json(routes); // Send the routes data as a JSON response
+// Fetch all sessions
+app.get('/api/sessions', (req, res) => {
+  res.json(sessions);
 });
 
-// Define a route to update a specific route by ID.
-// It updates attempts, successes, or failures for the route.
-app.put('/api/routes/:id', (req, res) => {
-  const routeId = parseInt(req.params.id, 10); // Parse route ID from URL parameters
-  const { difficulty, attempts, successes, failures } = req.body; // Destructure request body
+// Fetch session by ID
+app.get('/api/sessions/:id', (req, res) => {
+  const session = sessions.find(s => s.id === parseInt(req.params.id));
+  session ? res.json(session) : res.status(404).send('Session not found');
+});
 
-  const routeIndex = routes.findIndex((route) => route.id === routeId); // Find the route by ID
+// Create a new session
+app.post('/api/sessions', (req, res) => {
+  const newSession = {
+    id: sessions.length + 1,
+    date: new Date().toISOString().split('T')[0],  // Use the current date
+    routes: [],
+    completed: false,
+  };
+  sessions.push(newSession);
+  res.json(newSession);
+});
 
-  // If the route is found, update its data
-  if (routeIndex !== -1) {
-    routes[routeIndex] = { id: routeId, difficulty, attempts, successes, failures };
-    res.status(200).json(routes[routeIndex]); // Return the updated route
+// Mark session as complete
+app.put('/api/sessions/:id', (req, res) => {
+  const session = sessions.find(s => s.id === parseInt(req.params.id));
+  if (session) {
+    session.completed = req.body.completed || session.completed;
+    res.json(session);
   } else {
-    res.status(404).json({ message: 'Route not found' }); // Handle route not found
+    res.status(404).send('Session not found');
   }
 });
 
-// Define a route to add a new route dynamically.
-app.post('/api/routes', (req, res) => {
-  const newRoute = req.body;  // The new route data is sent in the request body
-  routes.push(newRoute);      // Add the new route to the routes array
-  res.status(201).json(newRoute); // Respond with the newly added route
+// Add a route to a session
+app.post('/api/sessions/:id/routes', (req, res) => {
+  const session = sessions.find(s => s.id === parseInt(req.params.id));
+  if (session) {
+    const newRoute = {
+      id: session.routes.length + 1,
+      difficulty: req.body.difficulty || 0,
+      attempts: 0,
+      successes: 0,
+      failures: 0,
+    };
+    session.routes.push(newRoute);
+    res.json(newRoute);
+  } else {
+    res.status(404).send('Session not found');
+  }
 });
 
-// Start the server, listening on the specified port.
+// Update route data in a session
+app.put('/api/sessions/:sessionId/routes/:routeId', (req, res) => {
+  const session = sessions.find(s => s.id === parseInt(req.params.sessionId));
+  if (session) {
+    const route = session.routes.find(r => r.id === parseInt(req.params.routeId));
+    if (route) {
+      route.difficulty = req.body.difficulty !== undefined ? req.body.difficulty : route.difficulty;
+      route.attempts = req.body.success !== null ? route.attempts + 1 : route.attempts;
+      route.successes = req.body.success === true ? route.successes + 1 : route.successes;
+      route.failures = req.body.success === false ? route.failures + 1 : route.failures;
+      res.json(route);
+    } else {
+      res.status(404).send('Route not found');
+    }
+  } else {
+    res.status(404).send('Session not found');
+  }
+});
+
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
