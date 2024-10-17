@@ -71,7 +71,7 @@ app.put('/api/sessions/:id', (req, res) => {
     session.completed = req.body.completed || session.completed;
     res.json(session);
   } else {
-    res.status(404).send('Session not found');
+    res.status(404).end();
   }
 });
 
@@ -111,10 +111,10 @@ app.put('/api/sessions/:sessionId/routes/:routeId', (req, res) => {
   if (session) {
     const route = session.routes.find(r => r.id === parseInt(req.params.routeId));
     if (route) {
-      route.difficulty = req.body.difficulty !== undefined ? req.body.difficulty : route.difficulty;
-      route.attempts = req.body.success !== null ? route.attempts + 1 : route.attempts;
-      route.successes = req.body.success === true ? route.successes + 1 : route.successes;
-      route.failures = req.body.success === false ? route.failures + 1 : route.failures;
+      route.difficulty = req.body.difficulty; 
+      route.attempts = req.body.attempts;
+      route.successes = req.body.successes;
+      route.failures = req.body.failures;
       res.json(route);
     } else {
       res.status(404).send('Route not found');

@@ -178,8 +178,9 @@ const ClimbingApp = () => {
     It can update the difficulty or success/failure status of a route.
   */
   const updateRoute = (routeId, success = null, difficulty = null) => {
+    console.log('changing', success, difficulty);
     const updatedRoute = routes.find((route) => route.id === routeId);
-
+    console.log(updatedRoute, success, difficulty)
     if (difficulty !== null) updatedRoute.difficulty = difficulty;
     if (success !== null) {
       updatedRoute.attempts += 1;
@@ -199,6 +200,8 @@ const ClimbingApp = () => {
       })
       .catch((error) => console.error('Error updating route:', error));
   };
+
+
 
   /*
     Function to add a new route to the current session.
