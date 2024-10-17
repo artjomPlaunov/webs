@@ -13,8 +13,15 @@ import CircularSlider from '@fseehawer/react-circular-slider';
 import './ClimbingApp.css';
 
 /*
+  § Route Component
+
   The Route component represents a single climbing route within a session.
   It displays the route's difficulty and allows the user to update its status.
+
+  In React, components are the building blocks of user interfaces. They encapsulate
+  pieces of the UI and their behavior. This component is a function that takes props
+  (properties) as input and returns JSX (a syntax extension for JavaScript that looks
+  similar to HTML) to describe what should be rendered.
 */
 
 const Route = ({ route, updateRoute }) => {
@@ -53,8 +60,13 @@ const Route = ({ route, updateRoute }) => {
 };
 
 /*
+  § Summary Component
+
   The Summary component displays a table summarizing the routes in a session.
   It shows the difficulty, attempts, successes, and failures for each route.
+
+  This component demonstrates how React can efficiently render lists of data.
+  The `map` function is used to transform each route object into a table row.
 */
 
 const Summary = ({ routes }) => {
@@ -83,8 +95,14 @@ const Summary = ({ routes }) => {
 };
 
 /*
+  § SessionList Component
+
   The SessionList component displays a list of previous climbing sessions.
   It allows the user to select and load a specific session.
+
+  This component showcases how to handle user interactions in React. The `onClick`
+  prop is used to attach an event handler that calls the `loadSession` function
+  when a session is clicked.
 */
 
 const SessionList = ({ sessions, loadSession }) => (
@@ -101,20 +119,44 @@ const SessionList = ({ sessions, loadSession }) => (
 );
 
 /*
+  § ClimbingApp Component
+
   The main ClimbingApp component manages the overall state and functionality
   of the application. It uses React hooks to manage state and side effects.
+
+  React hooks are functions that allow functional components to use state and
+  lifecycle features. They were introduced in React 16.8 to allow developers
+  to use state and other React features without writing a class.
 */
 
 const ClimbingApp = () => {
-  // State variables to manage the application's data
-  const [sessions, setSessions] = useState([]); // List of all sessions
-  const [currentSession, setCurrentSession] = useState(null); // ID of the current session
-  const [routes, setRoutes] = useState([]); // List of routes in the current session
-  const [isViewingSession, setIsViewingSession] = useState(false); // Flag for viewing previous sessions
+  /*
+    § State Management with useState
+
+    The useState hook is used to add state to functional components. It returns
+    an array with two elements: the current state value and a function to update it.
+
+    Here, we're using useState to manage several pieces of state:
+    - sessions: a list of all climbing sessions
+    - currentSession: the ID of the current session
+    - routes: a list of routes in the current session
+    - isViewingSession: a flag to indicate if we're viewing a previous session
+  */
+  const [sessions, setSessions] = useState([]);
+  const [currentSession, setCurrentSession] = useState(null);
+  const [routes, setRoutes] = useState([]);
+  const [isViewingSession, setIsViewingSession] = useState(false);
 
   /*
-    useEffect hook to fetch the list of sessions when the component mounts.
-    This is similar to componentDidMount in class components.
+    § Side Effects with useEffect
+
+    The useEffect hook lets you perform side effects in function components.
+    It's similar to componentDidMount, componentDidUpdate, and componentWillUnmount
+    combined in class components.
+
+    This useEffect hook is used to fetch the list of sessions when the component mounts.
+    The empty dependency array [] means this effect will only run once, when the
+    component is first rendered.
   */
   useEffect(() => {
     fetch('http://localhost:5000/api/sessions')
@@ -124,9 +166,13 @@ const ClimbingApp = () => {
   }, []);
 
   /*
-    Function to start a new climbing session.
-    It sends a POST request to the server and updates the local state.
+    § API Interaction Functions
+
+    These functions handle interactions with the backend API. They demonstrate
+    how to make HTTP requests from a React component and update the local state
+    based on the server's response.
   */
+
   const startNewSession = () => {
     fetch('http://localhost:5000/api/sessions', {
       method: 'POST',
@@ -140,10 +186,6 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error starting session:', error));
   };
 
-  /*
-    Function to load an existing session.
-    It fetches the session data from the server and updates the local state.
-  */
   const loadSession = (sessionId) => {
     fetch(`http://localhost:5000/api/sessions/${sessionId}`)
       .then((res) => res.json())
@@ -155,10 +197,6 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error loading session:', error));
   };
 
-  /*
-    Function to mark the current session as complete.
-    It sends a PUT request to the server and resets the local state.
-  */
   const completeSession = () => {
     fetch(`http://localhost:5000/api/sessions/${currentSession}`, {
       method: 'PUT',
@@ -173,10 +211,6 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error completing session:', error));
   };
 
-  /*
-    Function to update a route within the current session.
-    It can update the difficulty or success/failure status of a route.
-  */
   const updateRoute = (routeId, success = null, difficulty = null) => {
     const updatedRoute = routes.find((route) => route.id === routeId);
 
@@ -200,10 +234,6 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error updating route:', error));
   };
 
-  /*
-    Function to add a new route to the current session.
-    It sends a POST request to the server and updates the local state.
-  */
   const addNewRoute = () => {
     const newRoute = {
       difficulty: 0,
@@ -222,8 +252,14 @@ const ClimbingApp = () => {
   };
 
   /*
-    The render method for the ClimbingApp component.
-    It conditionally renders different views based on the current state.
+    § Rendering
+
+    In React, the render method (or return statement in functional components)
+    describes what the UI should look like. React uses this description to
+    efficiently update and render the right components when your data changes.
+
+    This render method uses conditional rendering to display different views
+    based on the current state of the application.
   */
   return (
     <div className="climbing-app">
@@ -264,4 +300,3 @@ const ClimbingApp = () => {
 
 // Export the ClimbingApp component as the default export
 export default ClimbingApp;
- 
