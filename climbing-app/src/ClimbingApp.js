@@ -83,7 +83,7 @@ const Summary = ({ routes }) => {
       <tbody>
         {routes.map((route) => (
           <tr key={route.id}>
-            <td>{['V0', 'V1', 'V2', 'V3', 'V4'][route.difficulty]}</td>
+            <td>{route.difficulty}</td>
             <td>{route.attempts}</td>
             <td>{route.successes}</td>
             <td>{route.failures}</td>

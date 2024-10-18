@@ -8,6 +8,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+app.use(express.json());
 const port = 5000;
 
 // Enable Cross-Origin Resource Sharing (CORS) and JSON parsing middleware
@@ -37,7 +38,7 @@ app.get('/api/sessions', (req, res) => {
 */
 app.get('/api/sessions/:id', (req, res) => {
   const session = sessions.find(s => s.id === parseInt(req.params.id));
-  session ? res.json(session) : res.status(404).send('Session not found');
+  session ? res.json(session) : res.status(404).end();
 });
 
 /*
@@ -94,7 +95,7 @@ app.post('/api/sessions/:id/routes', (req, res) => {
     session.routes.push(newRoute);
     res.json(newRoute);
   } else {
-    res.status(404).send('Session not found');
+    res.status(404).end();
   }
 });
 
@@ -117,10 +118,10 @@ app.put('/api/sessions/:sessionId/routes/:routeId', (req, res) => {
       route.failures = req.body.failures;
       res.json(route);
     } else {
-      res.status(404).send('Route not found');
+      res.status(404).end();
     }
   } else {
-    res.status(404).send('Session not found');
+    res.status(404).end();
   }
 });
 
