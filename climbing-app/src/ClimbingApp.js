@@ -186,6 +186,11 @@ const ClimbingApp = () => {
       .catch((error) => console.error('Error starting session:', error));
   };
 
+  const finishViewing = () => {
+    setIsViewingSession(false);
+    setCurrentSession(false);
+  }
+
   const loadSession = (sessionId) => {
     fetch(`http://localhost:5000/api/sessions/${sessionId}`)
       .then((res) => res.json())
@@ -277,7 +282,7 @@ const ClimbingApp = () => {
             // If viewing a previous session, show only the summary
             <>
               <Summary routes={routes} />
-              <button onClick={() => setIsViewingSession(false)}>
+              <button onClick={() => finishViewing()}>
                 Back to Session List
               </button>
             </>
