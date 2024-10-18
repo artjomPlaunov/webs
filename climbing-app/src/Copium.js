@@ -1,17 +1,15 @@
-// App.js
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import './ClimbingApp.css';
 
 // HomePage Component
 const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="home">
+    <div>
       <h1>Climbing Tracker</h1>
       <button onClick={() => navigate('/new-session')}>Start New Session</button>
-      <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+      <button onClick={() => alert('Old sessions not implemented yet!')}>View Old Sessions</button>
     </div>
   );
 };
@@ -19,7 +17,7 @@ const HomePage = () => {
 // DifficultySelector Component
 const DifficultySelector = ({ value, onChange }) => {
   return (
-    <div className="difficulty-selector">
+    <div>
       <label>Difficulty:</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}>
         <option value="">Select difficulty</option>
@@ -34,7 +32,7 @@ const DifficultySelector = ({ value, onChange }) => {
 // LogAttemptButtons Component
 const LogAttemptButtons = ({ attempts, onSuccess, onFailure }) => {
   return (
-    <div className="log-attempt-buttons">
+    <div>
       <p>Successful Attempts: {attempts.success}</p>
       <p>Failed Attempts: {attempts.fail}</p>
       <button onClick={onSuccess}>Log Success</button>
@@ -47,7 +45,6 @@ const LogAttemptButtons = ({ attempts, onSuccess, onFailure }) => {
 const NewSession = () => {
   const [routes, setRoutes] = useState([{ difficulty: '', attempts: { success: 0, fail: 0 } }]);
   const [currentRoute, setCurrentRoute] = useState(0);
-  const navigate = useNavigate();
 
   const addRoute = () => {
     setRoutes([...routes, { difficulty: '', attempts: { success: 0, fail: 0 } }]);
@@ -60,24 +57,16 @@ const NewSession = () => {
     setRoutes(updatedRoutes);
   };
 
-  const handleSubmit = async () => {
-    const response = await fetch('http://localhost:5000/api/sessions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ routes }),
-    });
-    if (response.ok) {
-      alert('Session submitted!');
-      navigate('/');
-    } else {
-      alert('Failed to submit session');
-    }
+  const handleSubmit = () => {
+    // Send session data to server (dummy API call here)
+    console.log('Submitting session:', routes);
+    // Simulate API call, then navigate back to home
+    alert('Session submitted!');
+    window.location.href = '/';
   };
 
   return (
-    <div className="new-session">
+    <div>
       <h1>New Climbing Session</h1>
 
       <div>
@@ -108,56 +97,16 @@ const NewSession = () => {
   );
 };
 
-// ViewSessions Component
-const ViewSessions = () => {
-  const [sessions, setSessions] = useState([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchSessions = async () => {
-      const response = await fetch('http://localhost:5000/api/sessions');
-      const data = await response.json();
-      setSessions(data);
-    };
-
-    fetchSessions();
-  }, []);
-
-  return (
-    <div className="view-sessions">
-      <h1>Climbing Sessions</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Session ID</th>
-            <th>Routes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sessions.map((session) => (
-            <tr key={session.id}>
-              <td>{session.id}</td>
-              <td>{session.routes.length}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={() => navigate('/')}>Back to Home</button>
-    </div>
-  );
-};
-
 // App Component
-const ClimbingApp = () => {
+const Copium = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/new-session" element={<NewSession />} />
-        <Route path="/view-sessions" element={<ViewSessions />} />
       </Routes>
     </Router>
   );
 };
 
-export default ClimbingApp;
+export default Copium;
