@@ -125,6 +125,12 @@ app.put('/api/sessions/:sessionId/routes/:routeId', (req, res) => {
   }
 });
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
 /*
   Finally, we start our server listening on the specified port.
   When the server starts successfully, it logs a message to the console.
