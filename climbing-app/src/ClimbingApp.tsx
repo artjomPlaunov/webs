@@ -68,6 +68,7 @@ const NewSession: React.FC = () => {
   const updateRoute = (index: number, updatedRoute: Route): void => {
     const updatedRoutes = [...routes];
     updatedRoutes[index] = updatedRoute;
+    setRoutes(updatedRoutes);
   };
 
   const handleSubmit = async (): Promise<void> => {
