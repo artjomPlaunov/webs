@@ -1,5 +1,5 @@
 // Import necessary dependencies from React and React Router
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, NavigateFunction } from 'react-router-dom';
 import './ClimbingApp.css';
 
