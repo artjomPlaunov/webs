@@ -96,6 +96,17 @@ const NewSession: React.FC = () => {
 
   // Function to submit the session data to the server
   const handleSubmit = async (): Promise<void> => {
+
+    const validSession = routes.every(route => 
+      route.difficulty !== '' && 
+      (route.attempts.success + route.attempts.fail) > 0
+    );
+
+    if (!validSession) {
+      alert('Please ensure all routes have a difficulty set and at least one attempt logged.');
+      return;
+    }
+
     const response = await fetch('http://localhost:5000/api/sessions', {
       method: 'POST',
       headers: {
@@ -183,7 +194,13 @@ const ViewSessions: React.FC = () => {
           {sessions.map((session) => (
             <tr key={session.id}>
               <td>{session.id}</td>
-              <td>{session.routes.length}</td>
+              <td>
+                {session.routes.map((route, index) => (
+                  <span key={index}>
+                    {route.difficulty} [Sends: {route.attempts.success}  Punts: {route.attempts.fail}]
+                  </span>
+                ))}
+              </td>
             </tr>
           ))}
         </tbody>
