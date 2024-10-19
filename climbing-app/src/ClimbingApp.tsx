@@ -1,5 +1,5 @@
 // Import necessary dependencies from React and React Router
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, NavigateFunction } from 'react-router-dom';
 import './ClimbingApp.css';
 
@@ -78,13 +78,13 @@ const LogAttemptButtons: React.FC<LogAttemptButtonsProps> = ({ attempts, onSucce
 const NewSession: React.FC = () => {
   // State for storing routes and current route index
   const [routes, setRoutes] = useState<Route[]>([{ difficulty: '', attempts: { success: 0, fail: 0 } }]);
-  const [currentRoute, setCurrentRoute] = useState<number>(0);
+  const [routeIndex, setRouteIndex] = useState<number>(0);
   const navigate: NavigateFunction = useNavigate();
 
   // Function to add a new route to the session
   const addRoute = (): void => {
     setRoutes([...routes, { difficulty: '', attempts: { success: 0, fail: 0 } }]);
-    setCurrentRoute(routes.length);
+    setRouteIndex(routes.length);
   };
 
   // Function to update a specific route's data
@@ -111,34 +111,36 @@ const NewSession: React.FC = () => {
     }
   };
 
+  // Create a variable for the current route
+  const currentRoute = routes[routeIndex];
+
   return (
     <div className="new-session">
       <h1>New Climbing Session</h1>
 
-      {/* Display current route information */}
       <div>
-        <h2>Route {currentRoute + 1}</h2>
+        <h2>Route {routeIndex + 1}</h2>
         <DifficultySelector 
-          value={routes[currentRoute].difficulty} 
-          onChange={(difficulty) => updateRoute(currentRoute, { ...routes[currentRoute], difficulty })}
+          value={currentRoute.difficulty} 
+          onChange={(difficulty) => updateRoute(routeIndex, { ...currentRoute, difficulty })}
         />
         <LogAttemptButtons 
-          attempts={routes[currentRoute].attempts} 
-          onSuccess={() => updateRoute(currentRoute, {
-            ...routes[currentRoute], 
-            attempts: { ...routes[currentRoute].attempts, success: routes[currentRoute].attempts.success + 1 }
+          attempts={currentRoute.attempts} 
+          onSuccess={() => updateRoute(routeIndex, {
+            ...currentRoute, 
+            attempts: { ...currentRoute.attempts, success: currentRoute.attempts.success + 1 }
           })}
-          onFailure={() => updateRoute(currentRoute, {
-            ...routes[currentRoute], 
-            attempts: { ...routes[currentRoute].attempts, fail: routes[currentRoute].attempts.fail + 1 }
+          onFailure={() => updateRoute(routeIndex, {
+            ...currentRoute, 
+            attempts: { ...currentRoute.attempts, fail: currentRoute.attempts.fail + 1 }
           })}
         />
       </div>
 
       {/* Navigation and submission buttons */}
       <button onClick={addRoute}>Add New Route</button>
-      <button onClick={() => setCurrentRoute(currentRoute - 1)} disabled={currentRoute === 0}>Previous Route</button>
-      <button onClick={() => setCurrentRoute(currentRoute + 1)} disabled={currentRoute === routes.length - 1}>Next Route</button>
+      <button onClick={() => setRouteIndex(routeIndex - 1)} disabled={routeIndex === 0}>Previous Route</button>
+      <button onClick={() => setRouteIndex(routeIndex + 1)} disabled={routeIndex === routes.length - 1}>Next Route</button>
 
       <button onClick={handleSubmit}>Submit Session</button>
     </div>
