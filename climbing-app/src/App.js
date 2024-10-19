@@ -1,6 +1,6 @@
 // src/App.js
 import React from 'react';
-import ClimbingApp from './ClimbingApp';
+import ClimbingApp from './ClimbingApp.tsx';
 
 function App() {
   return (

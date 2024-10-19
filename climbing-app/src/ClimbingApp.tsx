@@ -139,8 +139,12 @@ const NewSession: React.FC = () => {
 
       {/* Navigation and submission buttons */}
       <button onClick={addRoute}>Add New Route</button>
-      <button onClick={() => setRouteIndex(routeIndex - 1)} disabled={routeIndex === 0}>Previous Route</button>
-      <button onClick={() => setRouteIndex(routeIndex + 1)} disabled={routeIndex === routes.length - 1}>Next Route</button>
+      {routeIndex > 0 && (
+        <button onClick={() => setRouteIndex(routeIndex - 1)}>Previous Route</button>
+      )}
+      {routeIndex < routes.length - 1 && (
+        <button onClick={() => setRouteIndex(routeIndex + 1)}>Next Route</button>
+      )}
 
       <button onClick={handleSubmit}>Submit Session</button>
     </div>
