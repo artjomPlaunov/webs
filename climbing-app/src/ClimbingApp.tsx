@@ -1,6 +1,3 @@
-<<<<<<< HEAD
- 
-=======
 // Import necessary dependencies from React and React Router
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, NavigateFunction } from 'react-router-dom';
@@ -204,4 +201,3 @@ const ClimbingApp: React.FC = () => {
 };
 
 export default ClimbingApp;
->>>>>>> 05dde39392e7fccc26c5494fc13bd5b55b9847da

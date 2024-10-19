@@ -1,6 +1,3 @@
-<<<<<<< HEAD
- 
-=======
 // server.ts
 import express, { Request, Response } from 'express';
 import cors from 'cors';
@@ -53,4 +50,3 @@ app.get('/api/sessions/:id', (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
->>>>>>> 05dde39392e7fccc26c5494fc13bd5b55b9847da
