@@ -25,9 +25,9 @@ const DifficultySelector = ({ value, onChange }) => {
       <label>Difficulty:</label>
       <select value={value} onChange={(e) => onChange(e.target.value)}>
         <option value="">Select difficulty</option>
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
+        {[...Array(12)].map((_, i) => (
+          <option key={i} value={`V${i}`}>V{i}</option>
+        ))}
       </select>
     </div>
   );
