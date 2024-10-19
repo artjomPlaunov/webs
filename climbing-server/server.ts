@@ -16,6 +16,7 @@ interface Route {
 
 interface Session {
   id: string;
+  date: string; // Add date property
   routes: Route[];
 }
 
@@ -30,6 +31,7 @@ app.get('/api/sessions', (req: Request, res: Response) => {
 app.post('/api/sessions', (req: Request, res: Response) => {
   const newSession: Session = {
     id: uuidv4(),
+    date: new Date().toISOString().split('T')[0], // Store date as ISO string (YYYY-MM-DD)
     routes: req.body.routes.map((route: Omit<Route, 'id'>) => ({
       ...route,
       id: uuidv4(), // Unique ID for each route

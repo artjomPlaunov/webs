@@ -15,25 +15,23 @@ interface Route {
 }
 
 interface Session {
-  id: number;
+  id: string; // Change to string
+  date: string; // Add date property
   routes: Route[];
 }
 
 // HomePage Component: The main landing page of the application
 const HomePage: React.FC = () => {
-  // useNavigate is a hook from React Router for programmatic navigation
   const navigate: NavigateFunction = useNavigate();
 
   return (
     <div className="home">
       <h1>Climbing Tracker</h1>
-      {/* Navigation buttons that use the navigate function to change routes */}
       <button onClick={() => navigate('/new-session')}>Start New Session</button>
       <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
     </div>
   );
 };
-
 
 // DifficultySlider Component: A reusable slider for selecting climbing difficulty
 interface DifficultySliderProps {
@@ -58,24 +56,23 @@ const DifficultySlider: React.FC<DifficultySliderProps> = ({ value, onChange }) 
 
 // Updated NewSession Component
 const NewSession: React.FC = () => {
-  const [routes, setRoutes] = useState<Route[]>([{ difficulty: '', attempts: { success: 0, fail: 0 } }]);
+  const [routes, setRoutes] = useState<Route[]>([{ difficulty: 'V0', attempts: { success: 0, fail: 0 } }]);
   const [routeIndex, setRouteIndex] = useState<number>(0);
+  const navigate: NavigateFunction = useNavigate();
 
   const addRoute = (): void => {
-    setRoutes([...routes, { difficulty: '', attempts: { success: 0, fail: 0 } }]);
+    setRoutes([...routes, { difficulty: 'V0', attempts: { success: 0, fail: 0 } }]);
     setRouteIndex(routes.length);
   };
 
   const updateRoute = (index: number, updatedRoute: Route): void => {
     const updatedRoutes = [...routes];
     updatedRoutes[index] = updatedRoute;
-    setRoutes(updatedRoutes);
   };
 
   const handleSubmit = async (): Promise<void> => {
-
-    const validSession = routes.every(route => 
-      route.difficulty !== '' && 
+    const validSession = routes.every(route =>
+      route.difficulty !== '' &&
       (route.attempts.success + route.attempts.fail) > 0
     );
 
@@ -92,6 +89,7 @@ const NewSession: React.FC = () => {
     
     if (response.ok) {
       alert('Session submitted!');
+      navigate('/');
     } else {
       alert('Failed to submit session');
     }
@@ -136,11 +134,9 @@ const NewSession: React.FC = () => {
 
 // ViewSessions Component: Page for viewing all climbing sessions
 const ViewSessions: React.FC = () => {
-  // State for storing fetched sessions
   const [sessions, setSessions] = useState<Session[]>([]);
   const navigate: NavigateFunction = useNavigate();
 
-  // useEffect hook to fetch sessions when the component mounts
   useEffect(() => {
     const fetchSessions = async (): Promise<void> => {
       const response = await fetch('http://localhost:5000/api/sessions');
@@ -154,28 +150,28 @@ const ViewSessions: React.FC = () => {
   return (
     <div className="view-sessions">
       <h1>Climbing Sessions</h1>
-      {/* Table to display session data */}
       <table>
         <thead>
           <tr>
-            <th>Session ID</th>
+            <th>Date</th> {/* Change header to Date */}
             <th>Routes</th>
           </tr>
         </thead>
-        <tbody>
-          {sessions.map((session) => (
-            <tr key={session.id}>
-              <td>{session.id}</td>
-              <td>
-                {session.routes.map((route, index) => (
-                  <span key={index}>
-                    {route.difficulty} [Sends: {route.attempts.success}  Punts: {route.attempts.fail}]
-                  </span>
-                ))}
-              </td>
-            </tr>
-          ))}
-        </tbody>
+<tbody>
+  {sessions.map((session) => (
+    <tr key={session.id}>
+      <td>{session.date}</td>
+      <td>
+        {session.routes.map((route, index) => (
+          <span key={index} className={`grade-${route.difficulty}`}> {/* Apply the grade class */}
+            {route.difficulty} [Sends: {route.attempts.success} Punts: {route.attempts.fail}]
+          </span>
+        ))}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
       </table>
       <button onClick={() => navigate('/')}>Back to Home</button>
     </div>
@@ -196,3 +192,4 @@ const ClimbingApp: React.FC = () => {
 };
 
 export default ClimbingApp;
+

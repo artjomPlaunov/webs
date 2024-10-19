@@ -114,3 +114,77 @@
   right: 20px;
   background-color: #FF9800; /* Orange */
 }
+
+
+/* General styles for the View Sessions page */
+.view-sessions {
+  margin: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Styling for the table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+/* Styling for table headers */
+th {
+  background-color: #2196F3; /* Blue */
+  color: white;
+  padding: 12px;
+  font-size: 1.2rem;
+}
+
+/* Styling for table cells */
+td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+  font-size: 1rem;
+}
+
+/* Hover effect for table rows */
+tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Color coding for climbing grades */
+.grade-V0 { background-color: #A5D6A7; } /* Light Green */
+.grade-V1 { background-color: #FFEB3B; } /* Yellow */
+.grade-V2 { background-color: #FF9800; } /* Orange */
+.grade-V3 { background-color: #FF5722; } /* Deep Orange */
+.grade-V4 { background-color: #F44336; } /* Red */
+.grade-V5 { background-color: #E91E63; } /* Pink */
+.grade-V6 { background-color: #9C27B0; } /* Purple */
+.grade-V7 { background-color: #673AB7; } /* Indigo */
+.grade-V8 { background-color: #3F51B5; } /* Blue */
+.grade-V9 { background-color: #2196F3; } /* Light Blue */
+.grade-V10 { background-color: #03A9F4; } /* Cyan */
+.grade-V11 { background-color: #00BCD4; } /* Teal */
+
+/* Styling for the header of the View Sessions page */
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Back to Home button */
+.back-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #2196F3; /* Blue */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.back-button:hover {
+  background-color: #1976D2; /* Darker Blue */
+}
