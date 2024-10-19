@@ -1,4 +1,4 @@
-// App.js
+// ClimbinApp.js
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './ClimbingApp.css';
@@ -10,8 +10,10 @@ const HomePage = () => {
   return (
     <div className="home">
       <h1>Climbing Tracker</h1>
-      <button onClick={() => navigate('/new-session')}>Start New Session</button>
-      <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+      <div className="button-container">
+        <button onClick={() => navigate('/new-session')}>Start New Session</button>
+        <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+      </div>
     </div>
   );
 };
@@ -37,8 +39,10 @@ const LogAttemptButtons = ({ attempts, onSuccess, onFailure }) => {
     <div className="log-attempt-buttons">
       <p>Successful Attempts: {attempts.success}</p>
       <p>Failed Attempts: {attempts.fail}</p>
-      <button onClick={onSuccess}>Log Success</button>
-      <button onClick={onFailure}>Log Failure</button>
+      <div className="button-container">
+        <button className="success-button" onClick={onSuccess}>Log Success</button>
+        <button className="failure-button" onClick={onFailure}>Log Failure</button>
+      </div>
     </div>
   );
 };
@@ -99,11 +103,12 @@ const NewSession = () => {
         />
       </div>
 
-      <button onClick={addRoute}>Add New Route</button>
-      <button onClick={() => setCurrentRoute(currentRoute - 1)} disabled={currentRoute === 0}>Previous Route</button>
-      <button onClick={() => setCurrentRoute(currentRoute + 1)} disabled={currentRoute === routes.length - 1}>Next Route</button>
-
-      <button onClick={handleSubmit}>Submit Session</button>
+      <div className="button-container">
+        <button onClick={addRoute}>Add New Route</button>
+        <button onClick={() => setCurrentRoute(currentRoute - 1)} disabled={currentRoute === 0}>Previous Route</button>
+        <button onClick={() => setCurrentRoute(currentRoute + 1)} disabled={currentRoute === routes.length - 1}>Next Route</button>
+        <button onClick={handleSubmit}>Submit Session</button>
+      </div>
     </div>
   );
 };
@@ -137,17 +142,27 @@ const ViewSessions = () => {
           {sessions.map((session) => (
             <tr key={session.id}>
               <td>{session.id}</td>
-              <td>{session.routes.length}</td>
+              <td>
+                <ul>
+                  {session.routes.map((route) => (
+                    <li key={route.id}>
+                      {route.difficulty} - Success: {route.attempts.success}, Fail: {route.attempts.fail}
+                    </li>
+                  ))}
+                </ul>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button onClick={() => navigate('/')}>Back to Home</button>
+      <div className="button-container">
+        <button onClick={() => navigate('/')}>Back to Home</button>
+      </div>
     </div>
   );
 };
 
-// App Component
+// ClimbinApp Component
 const ClimbingApp = () => {
   return (
     <Router>
