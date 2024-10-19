@@ -1,9 +1,9 @@
 // server.ts
-import express, { Request, Response } from 'express';
+import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
 
-const app = express();
+const app: Express = express();
 const PORT: number = 5000;
 
 app.use(cors());
@@ -42,8 +42,11 @@ app.post('/api/sessions', (req: Request, res: Response) => {
 // Get a specific session
 app.get('/api/sessions/:id', (req: Request, res: Response) => {
   const session = sessions.find((s) => s.id === req.params.id);
-  if (!session) return res.status(404).send('Session not found');
-  res.json(session);
+  if (!session) {
+    res.status(404).send('Session not found');
+  } else {
+    res.json(session);
+  }
 });
 
 // Start the server
