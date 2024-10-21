@@ -34,14 +34,13 @@ interface Session {
 const HomePage: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
 
-  // We use the useNavigate hook from react-router-dom to get a function
-  // that allows us to programmatically navigate to different routes
-
   return (
-    <div className="home">
-      <h1>Climbing Tracker</h1>
-      <button onClick={() => navigate('/new-session')}>Start New Session</button>
-      <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+    <div className="container">
+      <div className="home">
+        <h1>Climbing Tracker</h1>
+        <button onClick={() => navigate('/new-session')}>Start New Session</button>
+        <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+      </div>
     </div>
   );
 };
@@ -85,8 +84,14 @@ const NewSession: React.FC = () => {
   // We also use useNavigate for navigation after submitting the session
 
   const addRoute = (): void => {
-    setRoutes([...routes, { difficulty: 0, attempts: { success: 0, fail: 0 } }]);
-    setRouteIndex(routes.length);
+    let lastRoute = routes[routes.length - 1];
+    const hasAttempts = lastRoute.attempts.success + lastRoute.attempts.fail > 0;
+    if (hasAttempts) {
+      setRoutes([...routes, { difficulty: 0, attempts: { success: 0, fail: 0 } }]);
+      setRouteIndex(routes.length);
+    } else {
+      alert('Please log at least one attempt for the previous route before adding a new one.');
+    }
   };
 
   // This function adds a new route to the routes array and sets the current index to the new route
@@ -100,12 +105,19 @@ const NewSession: React.FC = () => {
   // This function updates a specific route in the routes array
 
   const handleSubmit = async (): Promise<void> => {
-    const validSession = routes.every(route =>
-      route.attempts.success + route.attempts.fail > 0
-    );
+    // Remove the last route if it has no attempts
+    if (routes.length > 0) {
+      const lastRoute = routes[routes.length - 1];
+      if (lastRoute.attempts.success + lastRoute.attempts.fail === 0) {
+        routes.pop();
+      }
+    }
 
-    if (!validSession) {
-      alert('Please ensure all routes have a difficulty set and at least one attempt logged.');
+    // Check if there are any valid routes left
+    const hasValidRoutes = routes.length > 0;
+
+    if (!hasValidRoutes) {
+      alert('Please log at least one attempt for a route before submitting.');
       return;
     }
 
