@@ -15,7 +15,7 @@ interface Attempts {
 }
 
 interface Route {
-  difficulty: string;
+  difficulty: number;
   attempts: Attempts;
 }
 
@@ -77,7 +77,7 @@ const DifficultySlider: React.FC<DifficultySliderProps> = ({ value, onChange }) 
 
 // Updated NewSession Component
 const NewSession: React.FC = () => {
-  const [routes, setRoutes] = useState<Route[]>([{ difficulty: 'V0', attempts: { success: 0, fail: 0 } }]);
+  const [routes, setRoutes] = useState<Route[]>([{ difficulty: 0, attempts: { success: 0, fail: 0 } }]);
   const [routeIndex, setRouteIndex] = useState<number>(0);
   const navigate: NavigateFunction = useNavigate();
 
@@ -85,7 +85,7 @@ const NewSession: React.FC = () => {
   // We also use useNavigate for navigation after submitting the session
 
   const addRoute = (): void => {
-    setRoutes([...routes, { difficulty: 'V0', attempts: { success: 0, fail: 0 } }]);
+    setRoutes([...routes, { difficulty: 0, attempts: { success: 0, fail: 0 } }]);
     setRouteIndex(routes.length);
   };
 
@@ -101,8 +101,7 @@ const NewSession: React.FC = () => {
 
   const handleSubmit = async (): Promise<void> => {
     const validSession = routes.every(route =>
-      route.difficulty !== '' &&
-      (route.attempts.success + route.attempts.fail) > 0
+      route.attempts.success + route.attempts.fail > 0
     );
 
     if (!validSession) {
@@ -141,8 +140,8 @@ const NewSession: React.FC = () => {
       <div>
         <h2>Route {routeIndex + 1}</h2>
         <DifficultySlider 
-          value={parseInt(currentRoute.difficulty.replace('V', '') || '0')} 
-          onChange={(value) => updateRoute(routeIndex, { ...currentRoute, difficulty: `V${value}` })}
+          value={currentRoute.difficulty}
+          onChange={(value) => updateRoute(routeIndex, { ...currentRoute, difficulty: value })}
         />
         <div className="log-attempt-buttons">
           <p className="attempt-text">Successful Attempts: {currentRoute.attempts.success}</p>
@@ -212,8 +211,8 @@ const ViewSessions: React.FC = () => {
               <td>{session.date}</td>
               <td>
                 {session.routes.map((route, index) => (
-                  <span key={index} className={`grade-${route.difficulty}`}>
-                    {route.difficulty} [Sends: {route.attempts.success} Punts: {route.attempts.fail}]
+                  <span key={index} className={`grade-V${route.difficulty}`}>
+                    V{route.difficulty} [Sends: {route.attempts.success} Punts: {route.attempts.fail}]
                   </span>
                 ))}
               </td>
