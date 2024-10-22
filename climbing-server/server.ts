@@ -51,7 +51,9 @@ const SessionModel = mongoose.model<Session>('Session', SessionSchema);
 
 const username = encodeURIComponent(process.env.MONGODB_USERNAME as string);
 const password = encodeURIComponent(process.env.MONGODB_PASSWORD as string);
-const uri = `mongodb+srv://${username}:${password}@cluster0.vehjw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = (process.env.MONGODB_URI as string)
+  .replace('<db_username>', username)
+  .replace('<db_password>', password);
 console.log(uri);
 
 mongoose.connect(uri)
@@ -63,7 +65,6 @@ app.get('/api/sessions', async (req: Request, res: Response) => {
   try {
     const sessions: Session[] = await SessionModel.find();
     console.log(sessions);
-    console.log(sessions.length);
     res.json(sessions);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving sessions', error });
