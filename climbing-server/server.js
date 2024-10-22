@@ -38,10 +38,7 @@ app.post('/api/sessions', (req, res) => {
     const newSession = {
         id: (0, uuid_1.v4)(), // Generate a unique ID for the session
         date: new Date().toISOString().split('T')[0], // Store date as ISO string (YYYY-MM-DD)
-        routes: req.body.routes.map((route) => ({
-            ...route,
-            id: (0, uuid_1.v4)(), // Generate a unique ID for each route
-        })),
+        routes: req.body.routes.map((route) => (Object.assign(Object.assign({}, route), { id: (0, uuid_1.v4)() }))),
     };
     // Add the new session to our sessions array
     sessions.push(newSession);
