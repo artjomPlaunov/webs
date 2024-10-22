@@ -1,86 +1,88 @@
-// This is the main server file for our climbing app backend
-
-// Import necessary modules
 import express, { Request, Response } from 'express';
-// Express is a web application framework for Node.js
-// We're importing the main express function and two types: Request and Response
-
 import cors from 'cors';
-// CORS (Cross-Origin Resource Sharing) is a security feature implemented by web browsers
-// This module will help us handle CORS issues
-
 import { v4 as uuidv4 } from 'uuid';
-// uuid is a library for generating unique identifiers
-// We're importing the v4 function and renaming it to uuidv4
+import dotenv from 'dotenv';
+import mongoose, { Schema, Document } from 'mongoose';
 
-// Create an instance of the express application
+dotenv.config();
+
 const app = express();
-// This creates our server application
-
-// Define the port number our server will listen on
 const PORT: number = 5000;
 
-// Middleware setup
 app.use(cors());
-// This enables CORS for all routes, allowing our frontend to make requests to this server
-
 app.use(express.json());
-// This middleware parses incoming JSON payloads, making them available in req.body
 
-// Define interfaces for our data structures
-interface Route {
-  id: string;
-  [key: string]: any; // This allows for additional properties on the Route object
+// Define interfaces
+interface Attempts {
+  success: number;
+  fail: number;
 }
 
-interface Session {
+interface Route {
+  difficulty: number;
+  attempts: Attempts;
+}
+
+interface Session extends Document {
   id: string;
   date: string;
   routes: Route[];
 }
 
-// In-memory storage for our sessions
-let sessions: Session[] = [];
-// In a production app, this would typically be replaced with a database
-
-// Define our API routes
-
-// GET route to retrieve all sessions
-app.get('/api/sessions', (req: Request, res: Response) => {
-  res.json(sessions);
-  // This sends all sessions as a JSON response
+// Define Mongoose Schemas
+const AttemptsSchema = new Schema({
+  success: { type: Number, required: true, default: 0 },
+  fail: { type: Number, required: true, default: 0 }
 });
 
-// POST route to create a new session
-app.post('/api/sessions', (req: Request, res: Response) => {
-  // Create a new session object
-  const newSession: Session = {
-    id: uuidv4(), // Generate a unique ID for the session
-    date: new Date().toISOString().split('T')[0], // Store date as ISO string (YYYY-MM-DD)
-    routes: req.body.routes.map((route: Omit<Route, 'id'>) => ({
-      ...route,
-      id: uuidv4(), // Generate a unique ID for each route
-    })),
-  };
-  
-  // Add the new session to our sessions array
-  sessions.push(newSession);
-  
-  // Send the newly created session as a response with a 201 (Created) status
-  res.status(201).json(newSession);
+const RouteSchema = new Schema({
+  difficulty: { type: Number, required: true },
+  attempts: { type: AttemptsSchema, required: true }
 });
 
-// GET route to retrieve a specific session by ID
-app.get('/api/sessions/:id', (req: Request, res: Response) => {
-  // Find the session with the matching ID
-  const session = sessions.find((s) => s.id === req.params.id);
-  
-  if (!session) {
-    // If no session is found, send a 404 (Not Found) response
-    res.status(404).send('Session not found');
-  } else {
-    // If found, send the session as a JSON response
-    res.json(session);
+const SessionSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  date: { type: String, required: true },
+  routes: [RouteSchema]
+});
+
+// Create Mongoose Model
+const SessionModel = mongoose.model<Session>('Session', SessionSchema);
+
+const username = encodeURIComponent(process.env.MONGODB_USERNAME as string);
+const password = encodeURIComponent(process.env.MONGODB_PASSWORD as string);
+const uri = `mongodb+srv://${username}:${password}@cluster0.vehjw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+console.log(uri);
+
+mongoose.connect(uri)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.error('MongoDB connection error:', error));
+
+// Update GET route to retrieve all sessions
+app.get('/api/sessions', async (req: Request, res: Response) => {
+  try {
+    const sessions: Session[] = await SessionModel.find();
+    console.log(sessions);
+    console.log(sessions.length);
+    res.json(sessions);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving sessions', error });
+  }
+});
+
+// Update POST route to create a new session
+app.post('/api/sessions', async (req: Request, res: Response) => {
+  try {
+    const newSession = new SessionModel({
+      id: uuidv4(),
+      date: new Date().toISOString().split('T')[0],
+      routes: req.body.routes
+    });
+
+    const savedSession = await newSession.save();
+    res.status(201).json(savedSession);
+  } catch (error) {
+    res.status(400).json({ message: 'Error creating session', error });
   }
 });
 
