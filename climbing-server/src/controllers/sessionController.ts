@@ -14,7 +14,7 @@ export const getAllSessions = async (req: Request, res: Response) => {
 export const createSession = async (req: Request, res: Response) => {
   try {
     const newSession = new SessionModel({
-      id: uuidv4(),
+      id: uuidv4(),  // Generate a new UUID here
       date: new Date().toISOString().split('T')[0],
       routes: req.body.routes
     });
