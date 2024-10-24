@@ -3,11 +3,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import sessionRoutes from './routes/sessionRoutes';
+import { updateExistingUsers } from './models/User';
 
 dotenv.config();
 
 const app = express();
-const PORT: number = 5000;
+const PORT: number = 5001;
 
 app.use(cors());
 app.use(express.json());
@@ -20,7 +21,10 @@ const uri = (process.env.MONGODB_URI as string)
   .replace('<db_password>', password);
 
 mongoose.connect(uri)
-  .then(() => console.log('Connected to MongoDB'))
+  .then(async () => {
+    console.log('Connected to MongoDB');
+    await updateExistingUsers(); // Update existing users with new ids
+  })
   .catch((error) => console.error('Error connecting to MongoDB:', error));
 
 // Use session routes

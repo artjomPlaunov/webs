@@ -1,12 +1,7 @@
 // Import necessary dependencies from React and React Router
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, NavigateFunction } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, NavigateFunction, Navigate } from 'react-router-dom';
 import './ClimbingApp.css';
-
-// These imports are crucial for our React application:
-// - useEffect and useState are React hooks for managing side effects and state
-// - The imports from 'react-router-dom' are for handling routing in our app
-// - We're also importing our CSS file for styling
 
 // Define interfaces for our data structures
 interface Attempts {
@@ -25,36 +20,86 @@ interface Session {
   routes: Route[];
 }
 
-// These interfaces define the shape of our data:
-// - Attempts: Keeps track of successful and failed attempts
-// - Route: Represents a climbing route with its difficulty and attempts
-// - Session: Represents a climbing session with an ID, date, and array of routes
+// AuthPage Component: Handles both login and registration
+const AuthPage: React.FC<{ onLogin: (token: string) => void }> = ({ onLogin }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [error, setError] = useState('');
 
-// HomePage Component: The main landing page of the application
-const HomePage: React.FC = () => {
-  const navigate: NavigateFunction = useNavigate();
+  const handleAuth = async () => {
+    const endpoint = isRegistering ? 'register' : 'login';
+    try {
+      const response = await fetch(`http://localhost:5001/api/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (isRegistering) {
+          setError('Registration successful! You can now log in.');
+          setIsRegistering(false);
+        } else {
+          onLogin(data.token);
+        }
+      } else {
+        setError(data.message || `${isRegistering ? 'Registration' : 'Login'} failed. Please try again.`);
+      }
+    } catch (error) {
+      console.error(`${isRegistering ? 'Registration' : 'Login'} error:`, error);
+      setError(`An error occurred during ${isRegistering ? 'registration' : 'login'}. Please try again.`);
+    }
+  };
 
   return (
     <div className="container">
-      <div className="home">
+      <div className="auth">
         <h1>Climbing Tracker</h1>
-        <button onClick={() => navigate('/new-session')}>Start New Session</button>
-        <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+        <h2>{isRegistering ? 'Register' : 'Login'}</h2>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <input 
+          type="text" 
+          placeholder="Username" 
+          value={username} 
+          onChange={(e) => setUsername(e.target.value)} 
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+        />
+        <button onClick={handleAuth}>{isRegistering ? 'Register' : 'Login'}</button>
+        <button onClick={() => setIsRegistering(!isRegistering)}>
+          Switch to {isRegistering ? 'Login' : 'Register'}
+        </button>
       </div>
     </div>
   );
 };
 
-// This HomePage component renders the main page with two buttons
-// Each button uses the navigate function to go to a different route when clicked
+// Dashboard Component: Shows options after login
+const Dashboard: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+  const navigate: NavigateFunction = useNavigate();
+
+  return (
+    <div className="dashboard">
+      <h1>Welcome to Climbing Tracker</h1>
+      <button onClick={() => navigate('/new-session')}>Start New Session</button>
+      <button onClick={() => navigate('/view-sessions')}>View Sessions</button>
+      <button onClick={onLogout}>Logout</button>
+    </div>
+  );
+};
 
 // DifficultySlider Component: A reusable slider for selecting climbing difficulty
 interface DifficultySliderProps {
   value: number;
   onChange: (value: number) => void;
 }
-
-// This interface defines the props that the DifficultySlider component expects
 
 const DifficultySlider: React.FC<DifficultySliderProps> = ({ value, onChange }) => {
   return (
@@ -71,17 +116,11 @@ const DifficultySlider: React.FC<DifficultySliderProps> = ({ value, onChange }) 
   );
 };
 
-// This DifficultySlider component creates a range input (slider) for selecting difficulty
-// It displays the current value and calls the onChange function when the slider is moved
-
 // Updated NewSession Component
-const NewSession: React.FC = () => {
+const NewSession: React.FC<{ token: string }> = ({ token }) => {
   const [routes, setRoutes] = useState<Route[]>([{ difficulty: 0, attempts: { success: 0, fail: 0 } }]);
   const [routeIndex, setRouteIndex] = useState<number>(0);
   const navigate: NavigateFunction = useNavigate();
-
-  // We use useState to manage the state of our routes and the current route index
-  // We also use useNavigate for navigation after submitting the session
 
   const addRoute = (): void => {
     let lastRoute = routes[routes.length - 1];
@@ -94,18 +133,13 @@ const NewSession: React.FC = () => {
     }
   };
 
-  // This function adds a new route to the routes array and sets the current index to the new route
-
   const updateRoute = (index: number, updatedRoute: Route): void => {
     const updatedRoutes = [...routes];
     updatedRoutes[index] = updatedRoute;
     setRoutes(updatedRoutes);
   };
 
-  // This function updates a specific route in the routes array
-
   const handleSubmit = async (): Promise<void> => {
-    // Remove the last route if it has no attempts
     if (routes.length > 0) {
       const lastRoute = routes[routes.length - 1];
       if (lastRoute.attempts.success + lastRoute.attempts.fail === 0) {
@@ -113,7 +147,6 @@ const NewSession: React.FC = () => {
       }
     }
 
-    // Check if there are any valid routes left
     const hasValidRoutes = routes.length > 0;
 
     if (!hasValidRoutes) {
@@ -121,29 +154,24 @@ const NewSession: React.FC = () => {
       return;
     }
 
-    const response = await fetch('http://localhost:5000/api/sessions', {
+    const response = await fetch('http://localhost:5001/api/sessions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Include the token in the request
+      },
       body: JSON.stringify({ routes }),
     });
     
     if (response.ok) {
       alert('Session submitted!');
-      navigate('/');
+      navigate('/view-sessions');
     } else {
       alert('Failed to submit session');
     }
   };
 
-  // This function handles the submission of the session:
-  // 1. It checks if the session is valid (all routes have difficulty and at least one attempt)
-  // 2. If valid, it sends a POST request to the server with the session data
-  // 3. It then shows an alert based on the success or failure of the submission
-  // 4. If successful, it navigates back to the home page
-
   const currentRoute = routes[routeIndex];
-
-  // This gets the current route based on the routeIndex
 
   return (
     <div className="new-session">
@@ -180,87 +208,91 @@ const NewSession: React.FC = () => {
   );
 };
 
-// This NewSession component renders the form for creating a new climbing session:
-// - It uses the DifficultySlider component for setting route difficulty
-// - It provides buttons for logging successful and failed attempts
-// - It allows navigation between routes and adding new routes
-// - It has a submit button to save the session
-
 // ViewSessions Component: Page for viewing all climbing sessions
-const ViewSessions: React.FC = () => {
+const ViewSessions: React.FC<{ token: string }> = ({ token }) => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const navigate: NavigateFunction = useNavigate();
 
-  // We use useState to store the fetched sessions
-  // We use useNavigate for the "Back to Home" button
-
   useEffect(() => {
     const fetchSessions = async (): Promise<void> => {
-      const response = await fetch('http://localhost:5000/api/sessions');
-      const data: Session[] = await response.json();
-      setSessions(data);
+      try {
+        const response = await fetch('http://localhost:5001/api/sessions', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            setSessions(data);
+          } else {
+            console.error('Expected an array of sessions, but got:', data);
+            setSessions([]); // Set to empty array or handle as needed
+          }
+        } else {
+          console.error('Failed to fetch sessions:', response.statusText);
+          setSessions([]); // Optionally handle error state
+        }
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+        setSessions([]); // Handle network errors
+      }
     };
 
     fetchSessions();
-  }, []);
-
-  // This useEffect hook runs when the component mounts
-  // It fetches the sessions from the server and updates the state
+  }, [token]);
 
   return (
     <div className="view-sessions">
       <h1>Climbing Sessions</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Routes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sessions.map((session) => (
-            <tr key={session.id}>
-              <td>{session.date}</td>
-              <td>
-                {session.routes.map((route, index) => (
-                  <span key={index} className={`grade-V${route.difficulty}`}>
-                    V{route.difficulty} [Sends: {route.attempts.success} Punts: {route.attempts.fail}]
-                  </span>
-                ))}
-              </td>
+      {sessions.length === 0 ? (
+        <p>No sessions found.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Routes</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sessions.map((session) => (
+              <tr key={session.id}>
+                <td>{session.date}</td>
+                <td>
+                  {session.routes.map((route, index) => (
+                    <span key={index} className={`grade-V${route.difficulty}`}>
+                      V{route.difficulty} [Sends: {route.attempts.success} Punts: {route.attempts.fail}]
+                    </span>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       <button onClick={() => navigate('/')}>Back to Home</button>
     </div>
   );
 };
 
-// This ViewSessions component displays a table of all climbing sessions:
-// - It shows the date of each session
-// - For each session, it lists all routes with their difficulty and attempts
-// - It applies CSS classes based on the route difficulty for styling
-// - It provides a "Back to Home" button for navigation
-
 // Main App Component: Sets up routing for the entire application
 const ClimbingApp: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    setToken(null);
+  };
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/new-session" element={<NewSession />} />
-        <Route path="/view-sessions" element={<ViewSessions />} />
+        <Route path="/" element={token ? <Navigate to="/dashboard" /> : <AuthPage onLogin={setToken} />} />
+        <Route path="/dashboard" element={token ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/" />} />
+        <Route path="/new-session" element={token ? <NewSession token={token} /> : <Navigate to="/" />} />
+        <Route path="/view-sessions" element={token ? <ViewSessions token={token} /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
 };
 
-// This is the main component of our application:
-// - It uses React Router to set up the routing for our app
-// - It defines which component should be rendered for each route
-
 export default ClimbingApp;
-
-// We export the ClimbingApp component as the default export
-// This allows us to import it in other files (like index.js) to render our app
