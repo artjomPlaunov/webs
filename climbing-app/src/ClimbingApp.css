@@ -1,190 +1,350 @@
-/* Styling for the header */
-.session-header {
-  font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border-bottom: 2px solid #ccc;
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --background-color: #f5f7fa;
+  --text-color: #34495e;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
-/* Styling for attempts text */
-.attempt-text {
-  font-size: 1.2rem;
-  margin: 10px 0;
-  color: #555;
-  text-align: center;
-  font-weight: bold;
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
-/* Hover effect for dynamic buttons */
-.fixed-button,
-.nav-button,
-.log-success,
-.log-failure {
-  transition: all 0.3s ease;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.fixed-button:hover,
-.nav-button:hover,
-.log-success:hover,
-.log-failure:hover {
-  transform: scale(1.05);
-  background-color: #ff9800; /* Add a highlight on hover */
-  color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Checkmark and X symbol buttons */
-.log-success {
-  background-color: #4CAF50; /* Green */
-  color: white;
-  font-size: 1.5rem;
-  padding: 15px 20px;
-  margin: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.log-success::before {
-  content: '✔';
-  font-size: 1.5rem;
-  margin-right: 8px;
-}
-
-.log-failure {
-  background-color: #f44336; /* Red */
-  color: white;
-  font-size: 1.5rem;
-  padding: 15px 20px;
-  margin: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.log-failure::before {
-  content: '✖';
-  font-size: 1.5rem;
-  margin-right: 8px;
-}
-
-/* Previous/Next route buttons */
-.nav-button {
-  font-size: 1.2rem;
-  padding: 10px;
-  position: fixed;
-  cursor: pointer;
-  background-color: #ddd;
-  border: none;
-  border-radius: 5px;
-}
-
-.previous-route {
-  bottom: 20px;
-  left: 20px;
-}
-
-.next-route {
-  bottom: 20px;
-  right: 20px;
-}
-
-/* Add Route and Submit buttons */
-.fixed-button {
-  font-size: 1.5rem;
-  padding: 10px 20px;
-  margin: 10px;
-  position: fixed;
-  background-color: #2196F3; /* Blue */
+/* Common styles for buttons */
+button {
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 1rem;
   cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
 }
 
-.submit-button {
-  top: 20px;
-  right: 20px;
-  background-color: #FF9800; /* Orange */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-
-/* General styles for the View Sessions page */
-.view-sessions {
-  margin: 20px;
-  font-family: Arial, sans-serif;
+/* Auth Page */
+.auth {
+  background-color: white;
+  border-radius: 10px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  max-width: 400px;
+  margin: 50px auto;
 }
 
-/* Styling for the table */
-table {
+.auth h1 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth input {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-/* Styling for table headers */
-th {
-  background-color: #2196F3; /* Blue */
-  color: white;
   padding: 12px;
-  font-size: 1.2rem;
-}
-
-/* Styling for table cells */
-td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   font-size: 1rem;
 }
 
-/* Hover effect for table rows */
-tbody tr:hover {
-  background-color: #f2f2f2;
+/* Dashboard */
+.dashboard {
+  text-align: center;
+  padding: 50px 0;
 }
 
-/* Color coding for climbing grades */
-.grade-V0 { background-color: #A5D6A7; } /* Light Green */
-.grade-V1 { background-color: #FFEB3B; } /* Yellow */
-.grade-V2 { background-color: #FF9800; } /* Orange */
-.grade-V3 { background-color: #FF5722; } /* Deep Orange */
-.grade-V4 { background-color: #F44336; } /* Red */
-.grade-V5 { background-color: #E91E63; } /* Pink */
-.grade-V6 { background-color: #9C27B0; } /* Purple */
-.grade-V7 { background-color: #673AB7; } /* Indigo */
-.grade-V8 { background-color: #3F51B5; } /* Blue */
-.grade-V9 { background-color: #2196F3; } /* Light Blue */
-.grade-V10 { background-color: #03A9F4; } /* Cyan */
-.grade-V11 { background-color: #00BCD4; } /* Teal */
+.dashboard h1 {
+  color: var(--primary-color);
+  margin-bottom: 30px;
+}
 
-/* Styling for the header of the View Sessions page */
-h1 {
+.dashboard button {
+  margin: 10px;
+}
+
+/* New Session */
+.new-session {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+
+.session-header {
+  color: var(--primary-color);
   text-align: center;
-  color: #333;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.route-info h2 {
+  color: var(--text-color);
+  font-size: 1.8rem;
   margin-bottom: 20px;
 }
 
-/* Back to Home button */
-.back-button {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  background-color: #2196F3; /* Blue */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  text-align: center;
+.difficulty-slider {
+  margin-bottom: 30px;
 }
 
-.back-button:hover {
-  background-color: #1976D2; /* Darker Blue */
+.difficulty-slider label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.attempts-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.attempt-text {
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.log-attempt-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.log-success,
+.log-failure {
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 1rem;
+  transition: var(--transition);
+  flex: 1;
+  margin: 0 10px;
+}
+
+.log-success {
+  background-color: var(--secondary-color);
+}
+
+.log-failure {
+  background-color: #e74c3c;
+}
+
+.route-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.nav-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1.2rem;
+}
+
+.nav-button:hover {
+  transform: scale(1.1);
+}
+
+.route-counter {
+  margin: 0 20px;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.session-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.add-route,
+.submit-button {
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-route {
+  background-color: var(--primary-color);
+}
+
+.submit-button {
+  background-color: var(--secondary-color);
+}
+
+/* View Sessions */
+.view-sessions {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.view-sessions h1 {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.no-sessions {
+  text-align: center;
+  color: var(--text-color);
+  font-style: italic;
+}
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.session-card {
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.session-date {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 10px;
+}
+
+.routes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+}
+
+.route-box {
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.route-box:hover {
+  transform: translateY(-3px);
+}
+
+.route-grade {
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.route-attempts {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.route-attempts .success {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.route-attempts .fail {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.route-attempts .separator {
+  color: #7f8c8d;
+}
+
+/* Color coding for climbing grades */
+.grade-V0 { background-color: #A5D6A7; }
+.grade-V1 { background-color: #FFEB3B; }
+.grade-V2 { background-color: #FF9800; }
+.grade-V3 { background-color: #FF5722; }
+.grade-V4 { background-color: #F44336; }
+.grade-V5 { background-color: #E91E63; }
+.grade-V6 { background-color: #9C27B0; }
+.grade-V7 { background-color: #673AB7; }
+.grade-V8 { background-color: #3F51B5; }
+.grade-V9 { background-color: #2196F3; }
+.grade-V10 { background-color: #03A9F4; }
+.grade-V11 { background-color: #00BCD4; }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .auth {
+    padding: 20px;
+  }
+
+  .new-session {
+    padding: 20px;
+  }
+
+  .session-header {
+    font-size: 2rem;
+  }
+
+  .route-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .new-session,
+  .view-sessions {
+    padding: 10px;
+  }
+
+  .nav-button,
+  .fixed-button {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
 }

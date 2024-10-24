@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, NavigateFunction, Navigate } from 'react-router-dom';
 import './ClimbingApp.css';
+import { FaArrowLeft, FaArrowRight, FaPlus, FaCheck } from 'react-icons/fa';
 
 // Define interfaces for our data structures
 interface Attempts {
@@ -174,36 +175,49 @@ const NewSession: React.FC<{ token: string }> = ({ token }) => {
   const currentRoute = routes[routeIndex];
 
   return (
-    <div className="new-session">
-      <h1 className="session-header">New Climbing Session</h1>
+    <div className="container">
+      <div className="new-session">
+        <h1 className="session-header">New Climbing Session</h1>
 
-      <div>
-        <h2>Route {routeIndex + 1}</h2>
-        <DifficultySlider 
-          value={currentRoute.difficulty}
-          onChange={(value) => updateRoute(routeIndex, { ...currentRoute, difficulty: value })}
-        />
-        <div className="log-attempt-buttons">
-          <p className="attempt-text">Successful Attempts: {currentRoute.attempts.success}</p>
-          <p className="attempt-text">Failed Attempts: {currentRoute.attempts.fail}</p>
-          <button className="log-success" onClick={() => updateRoute(routeIndex, {
-            ...currentRoute, attempts: { ...currentRoute.attempts, success: currentRoute.attempts.success + 1 }
-          })}>Log Success</button>
-          <button className="log-failure" onClick={() => updateRoute(routeIndex, {
-            ...currentRoute, attempts: { ...currentRoute.attempts, fail: currentRoute.attempts.fail + 1 }
-          })}>Log Failure</button>
+        <div className="route-info">
+          <h2>Route {routeIndex + 1}</h2>
+          <DifficultySlider 
+            value={currentRoute.difficulty}
+            onChange={(value) => updateRoute(routeIndex, { ...currentRoute, difficulty: value })}
+          />
+          <div className="attempts-info">
+            <p className="attempt-text">Successful Attempts: {currentRoute.attempts.success}</p>
+            <p className="attempt-text">Failed Attempts: {currentRoute.attempts.fail}</p>
+          </div>
+          <div className="log-attempt-buttons">
+            <button className="log-success" onClick={() => updateRoute(routeIndex, {
+              ...currentRoute, attempts: { ...currentRoute.attempts, success: currentRoute.attempts.success + 1 }
+            })}>Log Success</button>
+            <button className="log-failure" onClick={() => updateRoute(routeIndex, {
+              ...currentRoute, attempts: { ...currentRoute.attempts, fail: currentRoute.attempts.fail + 1 }
+            })}>Log Failure</button>
+          </div>
+        </div>
+
+        <div className="route-navigation">
+          <button className="nav-button previous-route" onClick={() => setRouteIndex(routeIndex - 1)} disabled={routeIndex === 0}>
+            <FaArrowLeft />
+          </button>
+          <span className="route-counter">Route {routeIndex + 1} of {routes.length}</span>
+          <button className="nav-button next-route" onClick={() => setRouteIndex(routeIndex + 1)} disabled={routeIndex === routes.length - 1}>
+            <FaArrowRight />
+          </button>
+        </div>
+
+        <div className="session-actions">
+          <button className="add-route" onClick={addRoute}>
+            <FaPlus /> Add New Route
+          </button>
+          <button className="submit-button" onClick={handleSubmit}>
+            <FaCheck /> Submit Session
+          </button>
         </div>
       </div>
-
-      {routeIndex > 0 && (
-        <button className="nav-button previous-route" onClick={() => setRouteIndex(routeIndex - 1)}>Previous Route</button>
-      )}
-      {routeIndex < routes.length - 1 && (
-        <button className="nav-button next-route" onClick={() => setRouteIndex(routeIndex + 1)}>Next Route</button>
-      )}
-
-      <button className="fixed-button" onClick={addRoute}>Add New Route</button>
-      <button className="fixed-button submit-button" onClick={handleSubmit}>Submit Session</button>
     </div>
   );
 };
@@ -245,32 +259,29 @@ const ViewSessions: React.FC<{ token: string }> = ({ token }) => {
     <div className="view-sessions">
       <h1>Climbing Sessions</h1>
       {sessions.length === 0 ? (
-        <p>No sessions found.</p>
+        <p className="no-sessions">No sessions found.</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Routes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sessions.map((session) => (
-              <tr key={session.id}>
-                <td>{session.date}</td>
-                <td>
-                  {session.routes.map((route, index) => (
-                    <span key={index} className={`grade-V${route.difficulty}`}>
-                      V{route.difficulty} [Sends: {route.attempts.success} Punts: {route.attempts.fail}]
-                    </span>
-                  ))}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="sessions-list">
+          {sessions.map((session) => (
+            <div key={session.id} className="session-card">
+              <div className="session-date">{new Date(session.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+              <div className="routes-grid">
+                {session.routes.map((route, index) => (
+                  <div key={index} className="route-box">
+                    <div className={`route-grade grade-V${route.difficulty}`}>V{route.difficulty}</div>
+                    <div className="route-attempts">
+                      <span className="success">{route.attempts.success}</span>
+                      <span className="separator">/</span>
+                      <span className="fail">{route.attempts.fail}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
-      <button onClick={() => navigate('/')}>Back to Home</button>
+      <button className="back-button" onClick={() => navigate('/')}>Back to Home</button>
     </div>
   );
 };
