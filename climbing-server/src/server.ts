@@ -12,7 +12,7 @@ const PORT: number = parseInt(process.env.PORT || "3000", 10);
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('build'));
+app.use(express.static('dist'));
 
 // Connect to MongoDB
 const username = encodeURIComponent(process.env.MONGODB_USERNAME as string);

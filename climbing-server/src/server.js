@@ -20,9 +20,10 @@ const sessionRoutes_1 = __importDefault(require("./routes/sessionRoutes"));
 const User_1 = require("./models/User");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = 5001;
+const PORT = parseInt(process.env.PORT || "3000", 10);
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use(express_1.default.static('dist'));
 // Connect to MongoDB
 const username = encodeURIComponent(process.env.MONGODB_USERNAME);
 const password = encodeURIComponent(process.env.MONGODB_PASSWORD);

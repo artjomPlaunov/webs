@@ -2,7 +2,9 @@
   "name": "climbing-server",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
+    "scripts": {
+
+	"build": "tsc",
     "start": "ts-node src/server.ts",
     "dev": "ts-node src/server.ts"
   },
