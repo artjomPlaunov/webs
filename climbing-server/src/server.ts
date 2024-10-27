@@ -8,10 +8,11 @@ import { updateExistingUsers } from './models/User';
 dotenv.config();
 
 const app = express();
-const PORT: number = 5001;
+const PORT: number = parseInt(process.env.PORT || "5001", 10);
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('build'));
 
 // Connect to MongoDB
 const username = encodeURIComponent(process.env.MONGODB_USERNAME as string);

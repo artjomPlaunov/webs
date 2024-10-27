@@ -31,7 +31,7 @@ const AuthPage: React.FC<{ onLogin: (token: string) => void }> = ({ onLogin }) =
   const handleAuth = async () => {
     const endpoint = isRegistering ? 'register' : 'login';
     try {
-      const response = await fetch(`http://localhost:5001/api/${endpoint}`, {
+      const response = await fetch(`api/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -155,7 +155,7 @@ const NewSession: React.FC<{ token: string }> = ({ token }) => {
       return;
     }
 
-    const response = await fetch('http://localhost:5001/api/sessions', {
+    const response = await fetch('api/sessions', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ const ViewSessions: React.FC<{ token: string }> = ({ token }) => {
   useEffect(() => {
     const fetchSessions = async (): Promise<void> => {
       try {
-        const response = await fetch('http://localhost:5001/api/sessions', {
+        const response = await fetch('api/sessions', {
           headers: { Authorization: `Bearer ${token}` },
         });
     
