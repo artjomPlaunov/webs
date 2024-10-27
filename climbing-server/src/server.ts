@@ -8,7 +8,7 @@ import { updateExistingUsers } from './models/User';
 dotenv.config();
 
 const app = express();
-const PORT: number = parseInt(process.env.PORT || "5001", 10);
+const PORT: number = parseInt(process.env.PORT || "3000", 10);
 
 app.use(cors());
 app.use(express.json());
