@@ -20,7 +20,7 @@ const sessionRoutes_1 = __importDefault(require("./routes/sessionRoutes"));
 const User_1 = require("./models/User");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = parseInt(process.env.PORT || "3000", 10);
+const PORT = parseInt(process.env.PORT || "3001", 10);
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.static('dist'));
@@ -28,8 +28,8 @@ app.use(express_1.default.static('dist'));
 const username = encodeURIComponent(process.env.MONGODB_USERNAME);
 const password = encodeURIComponent(process.env.MONGODB_PASSWORD);
 const uri = process.env.MONGODB_URI
-    .replace('<db_username>', username)
-    .replace('<db_password>', password);
+    .replace('db_username', username)
+    .replace('db_password', password);
 mongoose_1.default.connect(uri)
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Connected to MongoDB');

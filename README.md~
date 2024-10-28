@@ -1,0 +1,6 @@
+- cancel current session.
+- delete sessions (these two are two allow the user experiment with how
+  the app works).
+- Local storage + retroactively creating accounts.
+- Move to postgresql instead of mongodb?
+- UI/UX revamp - make more intuitive. 

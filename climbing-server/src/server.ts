@@ -8,7 +8,7 @@ import { updateExistingUsers } from './models/User';
 dotenv.config();
 
 const app = express();
-const PORT: number = parseInt(process.env.PORT || "3000", 10);
+const PORT: number = parseInt(process.env.PORT || "3001", 10);
 
 app.use(cors());
 app.use(express.json());
@@ -18,8 +18,8 @@ app.use(express.static('dist'));
 const username = encodeURIComponent(process.env.MONGODB_USERNAME as string);
 const password = encodeURIComponent(process.env.MONGODB_PASSWORD as string);
 const uri = (process.env.MONGODB_URI as string)
-  .replace('<db_username>', username)
-  .replace('<db_password>', password);
+  .replace('db_username', username)
+  .replace('db_password', password);
 
 mongoose.connect(uri)
   .then(async () => {
